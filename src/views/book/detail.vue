@@ -2,7 +2,7 @@
     <el-descriptions title="Book Info" @click="handleClick">
         <el-descriptions-item label="Title">{{ book?.title }}</el-descriptions-item>
         <el-descriptions-item label="Author">{{ book?.author }}</el-descriptions-item>
-        <el-descriptions-item label="Price">{{ book?.price }}</el-descriptions-item>
+        <el-descriptions-item label="Price">${{ book?.price }}</el-descriptions-item>
     </el-descriptions>
 </template>
 
