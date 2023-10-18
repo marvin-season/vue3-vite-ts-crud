@@ -1,15 +1,15 @@
 <template>
     <el-descriptions title="Book Info" @click="handleClick">
-        <el-descriptions-item label="Title">{{ book?.title }}</el-descriptions-item>
-        <el-descriptions-item label="Author">{{ book?.author }}</el-descriptions-item>
-        <el-descriptions-item label="Price">${{ book?.price }}</el-descriptions-item>
+        <el-descriptions-item label="Title">{{ props.book?.title }}</el-descriptions-item>
+        <el-descriptions-item label="Author">{{ props.book?.author }}</el-descriptions-item>
+        <el-descriptions-item label="Price">${{ props.book?.price }}</el-descriptions-item>
     </el-descriptions>
 </template>
 
 <script setup lang="ts">
 import { BookDetailProps } from '@/types/index.ts'
 
-const { book } = defineProps<{ book: BookDetailProps | null }>()
+const props = defineProps<{ book: BookDetailProps | null }>()
 
 // defineEmits<{ (e: 'click_', id: number): void,  }>()
 const emit = defineEmits<{
@@ -17,8 +17,9 @@ const emit = defineEmits<{
 }>()
 
 const handleClick = () => {
-    if (book?.id) {
-        emit('click', book?.id)
+    if (props.book?.id) {
+        console.log(props.book.id);
+        emit('click', props.book?.id)
     }
 }
 

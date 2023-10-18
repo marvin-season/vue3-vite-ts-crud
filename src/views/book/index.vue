@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useBooks, useDeleteBook, useSaveBook, useSpecBook } from '@/hook/book';
 import { BookDetailProps } from '@/types';
-import { ElMessageBox, FormInstance } from 'element-plus';
+import { ElMessage, ElMessageBox, FormInstance } from 'element-plus';
 import { onBeforeMount, ref } from 'vue';
 import Details from './detail.vue';
 
@@ -68,13 +68,17 @@ const submitForm = (formEl: FormInstance | undefined) => {
     })
 }
 
+const handleClick = (id: number) => {
+    ElMessage({
+        message: id + ''
+    })
+}
+
 </script>
 <template>
     <div class="flex flex-col gap-3">
 
-        <Details v-if="book" :book="book" @click="(id) => {
-            console.log('aaa', id);
-        }"></Details>
+        <Details v-if="book" :book="book" @click="handleClick"></Details>
         <div class="flex flex-col items-start gap-3">
             <el-button type="primary" @click="handleAdd">Add</el-button>
             <el-table :data="books" border @rowClick="handleViewDetail">
