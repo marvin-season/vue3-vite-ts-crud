@@ -70,3 +70,34 @@ export function useBookDetail(url: string): {
     mutate: fetchBookDetail,
   };
 }
+
+export const usePostBook: (url: string) => {
+  mutate: (book: BookDetailProps) => Promise<void>;
+  isLoading: Ref<boolean>;
+  error: Ref<string | null>;
+} = (url) => {
+  const isLoading = ref(false);
+  const error = ref<string | null>(null);
+  const mutate = async (book: BookDetailProps) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const data = await request(`${url}`, {
+        method: "POST",
+        data: book
+      });
+      book.id = data.id;
+    } catch (err) {
+      error.value = "Failed to create book";
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  return {
+    isLoading,
+    mutate,
+    error,
+  };
+};

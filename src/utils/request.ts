@@ -1,9 +1,27 @@
-const request = async (url: string, data?: any) => {
-  const prefix = "http://localhost:9000";
+import qs from "qs";
+
+const baseUrl = "http://localhost:9000";
+const request = async (
+  url: string,
+  option?: RequestInit & { params?: { [key: string]: any }; data?: any }
+) => {
+  const option_: RequestInit = {};
+  option_.headers = {
+    "Content-Type": "application/json",
+    ...option?.headers,
+  };
+
+  option_.method = option?.method ?? "GET";
+
+  if (option?.data) {
+    option_.body = JSON.stringify(option?.data);
+  }
+
+  const paramsStr = qs.stringify(option?.params);
+  const url_ = baseUrl.concat(url).concat(paramsStr ? `?${paramsStr}` : "");
+
   try {
-    const response = await fetch(prefix + url, {
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(url_, option_);
     return await response.json();
   } catch (error) {}
 };
