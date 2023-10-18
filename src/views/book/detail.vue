@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { BookDetailProps } from '@/types/index.tsx'
+import { BookDetailProps } from '@/types/index.ts'
 
 const { book } = defineProps<{ book: BookDetailProps | null }>()
 
