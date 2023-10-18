@@ -3,9 +3,10 @@ import { useBooks, useDeleteBook, useSaveBook, useSpecBook } from '@/hook/book';
 import { BookDetailProps } from '@/types';
 import { ElMessageBox, FormInstance } from 'element-plus';
 import { onBeforeMount, ref } from 'vue';
+import Details from './detail.vue';
+
 const url = '/book'
 const formRef = ref<FormInstance>()
-const visiable = ref(false);
 const editVisiable = ref(false);
 const bookObject = ref<BookDetailProps>({
     id: -1,
@@ -22,7 +23,7 @@ onBeforeMount(refetch)
 
 const handleViewDetail = (row: any) => {
     fetchDetail(row.id)
-    visiable.value = true;
+    // visiable.value = true;
 }
 
 const handleEdit = async (row: any) => {
@@ -69,33 +70,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
 </script>
 <template>
+    <Details v-if="book" :book="book"></Details>
     <div>
         <el-button type="primary" @click="handleAdd">Add</el-button>
-        <el-table :data="books" border>
-            <el-table-column prop="id" label="ID" />
+        <el-table :data="books" border @rowClick="handleViewDetail">
+            <el-table-column prop="id" label="ID" width="60"/>
             <el-table-column prop="title" label="名称" width="300" />
             <el-table-column prop="author" label="作者" width="120" />
-            <el-table-column fixed="right" label="Operations" width="200">
+            <el-table-column fixed="right" label="Operations" width="130">
                 <template #default='{ row }'>
-                    <el-button link type="primary" size="small" @click="handleViewDetail(row)">Detail</el-button>
                     <el-button link type="success" size="small" @click="handleEdit(row)">Edit</el-button>
                     <el-button link type="danger" size="small" @click="handleDelete(row.id)">Delete</el-button>
                 </template>
             </el-table-column>
         </el-table>
-
-        <el-dialog v-model="visiable" title="Tips" width="50%" v-if="book">
-            <h3>{{ book.title }}</h3>
-            <h5>{{ book.author }}</h5>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="visiable = false">Cancel</el-button>
-                    <el-button type="primary" @click="visiable = false">
-                        Confirm
-                    </el-button>
-                </span>
-            </template>
-        </el-dialog>
 
         <el-dialog v-model="editVisiable" width="33%">
             <el-form ref="formRef" :model="bookObject" label-width="120px" class="demo-dynamic">
