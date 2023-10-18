@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useBook, usePostBook, usePutBook, useSpecBook } from '@/hook/book';
+import { useBooks, useSaveBook, useSpecBook } from '@/hook/book';
 import { BookDetailProps } from '@/types';
 import { FormInstance } from 'element-plus';
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 const url = '/book'
 const formRef = ref<FormInstance>()
 const visiable = ref(false);
@@ -13,11 +13,11 @@ const bookObject = ref<BookDetailProps>({
     author: ''
 });
 
-const { books, refetch } = useBook(url);
+const { books, refetch } = useBooks(url);
 const { book, refetch: fetchDetail } = useSpecBook(url);
-const { mutate: putBook, isSaving } = usePutBook(url)
-const { mutate: postBook, isSaving: isPostSaving } = usePostBook(url)
+const { mutate: saveBook, isSaving } = useSaveBook(url)
 
+onBeforeMount(refetch)
 
 const handleViewDetail = (row: any) => {
     fetchDetail(row.id)
@@ -30,29 +30,6 @@ const handleEdit = async (row: any) => {
     bookObject.value = book.value as BookDetailProps
     editVisiable.value = true
 }
-
-const handleUpdateApi = () => {
-    putBook({
-        book: bookObject.value
-    }).then(() => {
-        if (isSaving) {
-            editVisiable.value = false
-            refetch()
-        }
-    })
-}
-
-const handleAddApi = () => {
-    postBook({
-        book: bookObject.value
-    }).then(() => {
-        if (isPostSaving) {
-            editVisiable.value = false
-            refetch()
-        }
-    })
-}
-
 const handleAdd = async () => {
     handleReset();
     editVisiable.value = true
@@ -68,12 +45,12 @@ const handleReset = () => {
 
 const submitForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    formEl.validate((valid) => {
+    formEl.validate(async (valid) => {
         if (valid) {
-            if (bookObject.value.id === -1) {
-                handleAddApi()
-            } else {
-                handleUpdateApi()
+            await saveBook(bookObject.value)
+            if(isSaving){
+                refetch()
+                editVisiable.value = false
             }
         } else {
             console.log('error submit!')

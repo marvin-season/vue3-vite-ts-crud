@@ -22,6 +22,8 @@ const request = async (
 
   try {
     const response = await fetch(url_, option_);
+    if(response.status != 200){
+    }
     return await response.json();
   } catch (error) {}
 };

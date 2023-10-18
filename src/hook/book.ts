@@ -1,39 +1,39 @@
-import { Ref, onMounted, ref } from "vue";
+import { Ref, ref } from "vue";
 import request from "@/utils/request";
 import { BookDetailProps } from "@/types";
-export function useBook(url: string): {
-  isLoading: Ref<boolean>;
-  books: Ref<BookDetailProps[]>;
-  error: Ref<string | null>;
-  refetch: () => Promise<void>;
-} {
-  const isLoading = ref(false);
-  const books = ref<BookDetailProps[]>([]);
-  const error = ref<string | null>(null);
 
-  const refetch = async () => {
-    isLoading.value = true;
-    error.value = null;
-
+const useGetBook: (
+  url: string,
+  id?: number
+) => {
+  data: Ref<BookDetailProps | BookDetailProps[] | null>;
+  refetch: (id?: number) => Promise<void>;
+} = (url, id) => {
+  const book = ref<BookDetailProps | null>(null);
+  const refetch = async (id_?: number) => {
     try {
-      const data = await request(url);
-      books.value = data;
-    } catch (err) {
-      error.value = "Failed to fetch books";
-    } finally {
-      isLoading.value = false;
-    }
+      const data = await request(`${url}/${id_ ?? id ?? ""}`);
+      book.value = data;
+    } catch (error) {}
   };
-
-  onMounted(refetch);
 
   return {
-    isLoading,
-    books,
-    error,
     refetch,
+    data: book,
   };
-}
+};
+
+export const useBooks: (url: string) => {
+  books: Ref<BookDetailProps[] | null>;
+  refetch: () => Promise<void>;
+} = (url) => {
+  const { refetch, data: d } = useGetBook(url);
+  const data = d as Ref<BookDetailProps[] | null>;
+  return {
+    refetch,
+    books: data,
+  };
+};
 
 export const useSpecBook: (
   url: string,
@@ -42,68 +42,42 @@ export const useSpecBook: (
   book: Ref<BookDetailProps | null>;
   refetch: (id: number) => Promise<void>;
 } = (url, id) => {
-  const book = ref<BookDetailProps | null>(null);
-  const refetch = async (id_: number) => {
-    try {
-      const data = await request(`${url}/${id_ ?? id}`);
-      book.value = data;
-    } catch (error) {}
-  };
-
+  const { refetch, data: d } = useGetBook(url, id);
+  const data = d as Ref<BookDetailProps | null>;
   return {
-    refetch,
-    book,
+    refetch: refetch as (id: number) => Promise<void>,
+    book: data,
   };
 };
 
 export const usePutBook: (url: string) => {
-  mutate: (book: { book: BookDetailProps }) => Promise<void>;
+  mutate: (book: BookDetailProps & { id?: number }) => Promise<void>;
   isSaving: Ref<boolean>;
-  error: Ref<string | null>;
 } = (url) => {
-  const isSaving = ref(false);
-  const error = ref<string | null>(null);
-  const mutate = async (book: { book: BookDetailProps }) => {
-    isSaving.value = true;
-    error.value = null;
-
-    try {
-      await request(`${url}`, {
-        method: "PUT",
-        data: book,
-      });
-    } catch (err) {
-      error.value = "Failed to create book";
-    } finally {
-    }
-  };
-
-  return {
-    isSaving,
-    mutate,
-    error,
-  };
+  return useSaveBook(url);
 };
 
-
 export const usePostBook: (url: string) => {
-  mutate: (book: { book: BookDetailProps }) => Promise<void>;
+  mutate: (book: BookDetailProps & { id?: number }) => Promise<void>;
   isSaving: Ref<boolean>;
-  error: Ref<string | null>;
+} = (url) => {
+  return useSaveBook(url);
+};
+
+export const useSaveBook: (url: string) => {
+  mutate: (book: BookDetailProps & { id?: number }) => Promise<void>;
+  isSaving: Ref<boolean>;
 } = (url) => {
   const isSaving = ref(false);
-  const error = ref<string | null>(null);
-  const mutate = async (book: { book: BookDetailProps }) => {
-    isSaving.value = true;
-    error.value = null;
 
+  const mutate = async (book: BookDetailProps & { id?: number }) => {
+    isSaving.value = true;
     try {
       await request(`${url}`, {
-        method: "POST",
-        data: book,
+        method: book.id != -1 ? "PUT" : "POST",
+        data: { book },
       });
     } catch (err) {
-      error.value = "Failed to create book";
     } finally {
     }
   };
@@ -111,6 +85,5 @@ export const usePostBook: (url: string) => {
   return {
     isSaving,
     mutate,
-    error,
   };
 };

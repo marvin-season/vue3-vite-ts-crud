@@ -1,5 +1,5 @@
 export interface BookDetailProps {
-  id: string | number;
+  id: number;
   title: string;
   author: string;
 }
