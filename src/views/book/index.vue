@@ -13,8 +13,8 @@ const bookObject = ref<BookDetailProps>({
     author: ''
 });
 
-const { books, refetch } = useBooks(url);
-const { book, refetch: fetchDetail } = useSpecBook(url);
+const { data: books, refetch } = useBooks(url);
+const { data: book, refetch: fetchDetail } = useSpecBook(url);
 const { mutate: saveBook, isSaving } = useSaveBook(url)
 const { mutate: deleteBook } = useDeleteBook(url)
 

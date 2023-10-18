@@ -24,14 +24,14 @@ const useGetBook: (
 };
 
 export const useBooks: (url: string) => {
-  books: Ref<BookDetailProps[] | null>;
+  data: Ref<BookDetailProps[] | null>;
   refetch: () => Promise<void>;
 } = (url) => {
   const { refetch, data: d } = useGetBook(url);
   const data = d as Ref<BookDetailProps[] | null>;
   return {
     refetch,
-    books: data,
+    data,
   };
 };
 
@@ -39,14 +39,14 @@ export const useSpecBook: (
   url: string,
   id?: number | undefined
 ) => {
-  book: Ref<BookDetailProps | null>;
+  data: Ref<BookDetailProps | null>;
   refetch: (id: number) => Promise<void>;
 } = (url, id) => {
   const { refetch, data: d } = useGetBook(url, id);
   const data = d as Ref<BookDetailProps | null>;
   return {
     refetch: refetch as (id: number) => Promise<void>,
-    book: data,
+    data,
   };
 };
 
