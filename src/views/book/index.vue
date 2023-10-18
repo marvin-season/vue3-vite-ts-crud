@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useBooks, useSaveBook, useSpecBook } from '@/hook/book';
+import { useBooks, useDeleteBook, useSaveBook, useSpecBook } from '@/hook/book';
 import { BookDetailProps } from '@/types';
-import { FormInstance } from 'element-plus';
+import { ElMessageBox, FormInstance } from 'element-plus';
 import { onBeforeMount, ref } from 'vue';
 const url = '/book'
 const formRef = ref<FormInstance>()
@@ -16,6 +16,7 @@ const bookObject = ref<BookDetailProps>({
 const { books, refetch } = useBooks(url);
 const { book, refetch: fetchDetail } = useSpecBook(url);
 const { mutate: saveBook, isSaving } = useSaveBook(url)
+const { mutate: deleteBook } = useDeleteBook(url)
 
 onBeforeMount(refetch)
 
@@ -35,6 +36,13 @@ const handleAdd = async () => {
     editVisiable.value = true
 }
 
+const handleDelete = (id: number) => {
+    ElMessageBox.confirm('确定删除吗？', '提示').then(async () => {
+        await deleteBook(id)
+        refetch()
+    })
+}
+
 const handleReset = () => {
     bookObject.value = {
         id: -1,
@@ -48,7 +56,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
     formEl.validate(async (valid) => {
         if (valid) {
             await saveBook(bookObject.value)
-            if(isSaving){
+            if (isSaving) {
                 refetch()
                 editVisiable.value = false
             }
@@ -67,10 +75,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
             <el-table-column prop="id" label="ID" />
             <el-table-column prop="title" label="名称" width="300" />
             <el-table-column prop="author" label="作者" width="120" />
-            <el-table-column fixed="right" label="Operations" width="120">
+            <el-table-column fixed="right" label="Operations" width="200">
                 <template #default='{ row }'>
                     <el-button link type="primary" size="small" @click="handleViewDetail(row)">Detail</el-button>
-                    <el-button link type="danger" size="small" @click="handleEdit(row)">Edit</el-button>
+                    <el-button link type="success" size="small" @click="handleEdit(row)">Edit</el-button>
+                    <el-button link type="danger" size="small" @click="handleDelete(row.id)">Delete</el-button>
                 </template>
             </el-table-column>
         </el-table>

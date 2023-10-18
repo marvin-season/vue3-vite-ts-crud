@@ -87,3 +87,19 @@ export const useSaveBook: (url: string) => {
     mutate,
   };
 };
+
+export const useDeleteBook: (url: string) => {
+  mutate: (id: number) => Promise<void>;
+} = (url) => {
+  const mutate = async (id: number) => {
+    try {
+      request(`${url}/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {}
+  };
+
+  return {
+    mutate,
+  };
+};
