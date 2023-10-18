@@ -70,36 +70,38 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
 </script>
 <template>
-    <div class="text-3xl font-bold underline">111</div>
-    <Details v-if="book" :book="book" @click="(id) => {
-        console.log('aaa', id);
-    }"></Details>
-    <div>
-        <el-button type="primary" @click="handleAdd">Add</el-button>
-        <el-table :data="books" border @rowClick="handleViewDetail">
-            <el-table-column prop="id" label="ID" width="60" />
-            <el-table-column prop="title" label="名称" width="300" />
-            <el-table-column prop="author" label="作者" width="120" />
-            <el-table-column fixed="right" label="Operations" width="130">
-                <template #default='{ row }'>
-                    <el-button link type="success" size="small" @click="handleEdit(row)">Edit</el-button>
-                    <el-button link type="danger" size="small" @click="handleDelete(row.id)">Delete</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
+    <div class="flex flex-col gap-3">
 
-        <el-dialog v-model="editVisiable" width="33%">
-            <el-form ref="formRef" :model="bookObject" label-width="120px" class="demo-dynamic">
-                <el-form-item prop="title" label="Title">
-                    <el-input v-model="bookObject.title" />
-                </el-form-item>
-                <el-form-item prop="author" label="Author">
-                    <el-input v-model="bookObject.author" />
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm(formRef)">Submit</el-button>
-                </el-form-item>
-            </el-form>
-        </el-dialog>
+        <Details v-if="book" :book="book" @click="(id) => {
+            console.log('aaa', id);
+        }"></Details>
+        <div class="flex flex-col items-start gap-3">
+            <el-button type="primary" @click="handleAdd">Add</el-button>
+            <el-table :data="books" border @rowClick="handleViewDetail">
+                <el-table-column prop="id" label="ID" width="60" />
+                <el-table-column prop="title" label="名称" width="300" />
+                <el-table-column prop="author" label="作者" width="120" />
+                <el-table-column fixed="right" label="Operations" width="130">
+                    <template #default='{ row }'>
+                        <el-button link type="success" size="small" @click="handleEdit(row)">Edit</el-button>
+                        <el-button link type="danger" size="small" @click="handleDelete(row.id)">Delete</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+
+            <el-dialog v-model="editVisiable" width="33%">
+                <el-form ref="formRef" :model="bookObject" label-width="120px" class="demo-dynamic">
+                    <el-form-item prop="title" label="Title">
+                        <el-input v-model="bookObject.title" />
+                    </el-form-item>
+                    <el-form-item prop="author" label="Author">
+                        <el-input v-model="bookObject.author" />
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm(formRef)">Submit</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-dialog>
+        </div>
     </div>
 </template>
