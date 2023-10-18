@@ -70,11 +70,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
 </script>
 <template>
-    <Details v-if="book" :book="book"></Details>
+    <div class="text-3xl font-bold underline">111</div>
+    <Details v-if="book" :book="book" @click="(id) => {
+        console.log('aaa', id);
+    }"></Details>
     <div>
         <el-button type="primary" @click="handleAdd">Add</el-button>
         <el-table :data="books" border @rowClick="handleViewDetail">
-            <el-table-column prop="id" label="ID" width="60"/>
+            <el-table-column prop="id" label="ID" width="60" />
             <el-table-column prop="title" label="名称" width="300" />
             <el-table-column prop="author" label="作者" width="120" />
             <el-table-column fixed="right" label="Operations" width="130">
