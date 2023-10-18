@@ -1,5 +1,5 @@
 import qs from "qs";
-
+import { ElMessage } from "element-plus";
 const baseUrl = "http://localhost:9000";
 const request = async (
   url: string,
@@ -22,7 +22,12 @@ const request = async (
 
   try {
     const response = await fetch(url_, option_);
+    
     if(response.status != 200){
+      ElMessage({
+        message: response.statusText,
+        type: "error",
+      })
     }
     return await response.json();
   } catch (error) {}
