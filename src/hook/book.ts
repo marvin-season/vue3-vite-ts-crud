@@ -35,68 +35,81 @@ export function useBook(url: string): {
   };
 }
 
-export function useBookDetail(url: string): {
-  isLoading: Ref<boolean>;
+export const useSpecBook: (
+  url: string,
+  id?: number | undefined
+) => {
   book: Ref<BookDetailProps | null>;
-  error: Ref<string | null>;
-  mutate: (id: number) => Promise<void>;
-} {
-  const isLoading = ref(false);
+  refetch: (id: number) => Promise<void>;
+} = (url, id) => {
   const book = ref<BookDetailProps | null>(null);
-  const error = ref<string | null>(null);
-
-  const fetchBookDetail = async (id: number) => {
-    isLoading.value = true;
-    error.value = null;
-
+  const refetch = async (id_: number) => {
     try {
-      const data = await request(`${url}/${id}`);
+      const data = await request(`${url}/${id_ ?? id}`);
       book.value = data;
-    } catch (err) {
-      error.value = "Failed to fetch book details";
-    } finally {
-      isLoading.value = false;
-    }
+    } catch (error) {}
   };
-
-  onMounted(() => {
-    // You can fetch initial data here if needed
-  });
 
   return {
-    isLoading,
+    refetch,
     book,
-    error,
-    mutate: fetchBookDetail,
   };
-}
+};
 
-export const usePostBook: (url: string) => {
-  mutate: (book: BookDetailProps) => Promise<void>;
-  isLoading: Ref<boolean>;
+export const usePutBook: (url: string) => {
+  mutate: (book: { book: BookDetailProps }) => Promise<void>;
+  isSaving: Ref<boolean>;
   error: Ref<string | null>;
 } = (url) => {
-  const isLoading = ref(false);
+  const isSaving = ref(false);
   const error = ref<string | null>(null);
-  const mutate = async (book: BookDetailProps) => {
-    isLoading.value = true;
+  const mutate = async (book: { book: BookDetailProps }) => {
+    isSaving.value = true;
     error.value = null;
 
     try {
-      const data = await request(`${url}`, {
-        method: "POST",
-        data: book
+      await request(`${url}`, {
+        method: "PUT",
+        data: book,
       });
-      book.id = data.id;
     } catch (err) {
       error.value = "Failed to create book";
     } finally {
-      isLoading.value = false;
     }
   };
 
   return {
-    isLoading,
+    isSaving,
+    mutate,
+    error,
+  };
+};
+
+
+export const usePostBook: (url: string) => {
+  mutate: (book: { book: BookDetailProps }) => Promise<void>;
+  isSaving: Ref<boolean>;
+  error: Ref<string | null>;
+} = (url) => {
+  const isSaving = ref(false);
+  const error = ref<string | null>(null);
+  const mutate = async (book: { book: BookDetailProps }) => {
+    isSaving.value = true;
+    error.value = null;
+
+    try {
+      await request(`${url}`, {
+        method: "POST",
+        data: book,
+      });
+    } catch (err) {
+      error.value = "Failed to create book";
+    } finally {
+    }
+  };
+
+  return {
+    isSaving,
     mutate,
     error,
   };
