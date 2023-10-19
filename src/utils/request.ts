@@ -1,6 +1,7 @@
 import qs from "qs";
 import { ElMessage } from "element-plus";
-const baseUrl = "http://localhost:9000";
+const baseUrl = `${import.meta.env.VITE_BASE_URL}`;
+
 const request = async (
   url: string,
   option?: RequestInit & { params?: { [key: string]: any }; data?: any }
