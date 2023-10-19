@@ -36,7 +36,7 @@ export const useEchart: (
       // 在这里处理点击事件
       currentLevelInfo.value = {
         level: currentLevelInfo.value.level + 1,
-        preName: currentLevelInfo.value.name,
+        nameStack: currentLevelInfo.value.nameStack.concat(params.name),
         name: params.name,
       };
     });

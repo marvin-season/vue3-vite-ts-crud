@@ -5,18 +5,19 @@ const base = "/src/assets/geo/";
 const geoLevelUrlMap: Record<string, string> = {
   0: "省",
   1: "市",
+  2: "县",
 };
 
 export interface LevelInfoProps {
   level: number;
   name: string;
-  preName: string;
+  nameStack: string[];
 }
 
 export const initLevelInfo: LevelInfoProps = {
   level: 0,
   name: "甘肃省",
-  preName: "甘肃省",
+  nameStack: ["甘肃省"],
 };
 
 export const getMapData: (
@@ -24,10 +25,12 @@ export const getMapData: (
   action?: "up" | "down"
 ) => any = async (currentLevelInfo, action = "down") => {
   if (action == "up") {
-    const currentName = currentLevelInfo.value.name;
     currentLevelInfo.value.level -= 1;
-    currentLevelInfo.value.name = currentLevelInfo.value.preName;
-    currentLevelInfo.value.preName = currentName;
+    currentLevelInfo.value.nameStack.pop();
+    currentLevelInfo.value.name =
+      currentLevelInfo.value.nameStack[
+        currentLevelInfo.value.nameStack.length - 1
+      ];
   }
 
   const { name, level } = currentLevelInfo.value;
