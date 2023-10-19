@@ -23,8 +23,12 @@ const {
 
 
 const handleClickUp = async () => {
-    const data = await getMapData(currentLevelInfo, 'up');
-    updateEchartOption(data)
+    try {
+        const data = await getMapData(currentLevelInfo, 'up');
+        updateEchartOption(data)
+    } catch (error) {
+
+    }
 }
 
 
