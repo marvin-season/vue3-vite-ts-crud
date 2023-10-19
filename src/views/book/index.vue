@@ -76,16 +76,16 @@ const handleClick = (id: number) => {
 
 </script>
 <template>
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-wrap gap-1">
 
-        <Details v-if="book" :book="book" @click="handleClick"></Details>
-        <div class="flex flex-col items-start gap-3">
+        <Details class="basis-1/3" v-if="book" :book="book" @click="handleClick"></Details>
+        <div class="basis-2/3 flex flex-col items-start gap-3">
             <el-button type="primary" @click="handleAdd">Add</el-button>
-            <el-table :data="books" border @rowClick="handleViewDetail">
+            <el-table :fit="true" :data="books" border @rowClick="handleViewDetail">
                 <el-table-column prop="id" label="ID" width="60" />
-                <el-table-column prop="title" label="名称" width="300" />
+                <el-table-column prop="title" label="名称"/>
                 <el-table-column prop="author" label="作者" width="120" />
-                <el-table-column fixed="right" label="Operations" width="130">
+                <el-table-column fixed="right" label="Operations" width="120">
                     <template #default='{ row }'>
                         <el-button link type="success" size="small" @click="handleEdit(row)">Edit</el-button>
                         <el-button link type="danger" size="small" @click="handleDelete(row.id)">Delete</el-button>

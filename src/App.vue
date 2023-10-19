@@ -3,7 +3,7 @@ import Book from '@/views/book/index.vue'
 </script>
 
 <template>
-  <div>
+  <div class="p-10">
     <Book/>
   </div>
 </template>

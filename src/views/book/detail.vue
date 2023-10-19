@@ -1,5 +1,5 @@
 <template>
-    <el-descriptions title="Book Info" @click="handleClick">
+    <el-descriptions title="Book Info" @click="handleClick" class="hover:bg-sky-200 rounded-md p-1">
         <el-descriptions-item label="Title">{{ props.book?.title }}</el-descriptions-item>
         <el-descriptions-item label="Author">{{ props.book?.author }}</el-descriptions-item>
         <el-descriptions-item label="Price">${{ props.book?.price }}</el-descriptions-item>
