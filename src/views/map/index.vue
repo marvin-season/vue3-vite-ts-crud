@@ -8,22 +8,16 @@
 <script setup lang="ts">
 import * as echarts from 'echarts';
 import mapData from '@/assets/geo/甘肃省/index.json' // 你的地图数据文件
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { mapService } from './machine';
 import { useOption } from './useOption';
+import { getMapData } from './util';
 
 const mapRef = ref<HTMLDivElement | null>(null)
 const myChart = ref()
 const selectedName = ref('customMap')
 
 const { option, updateOption } = useOption()
-
-
-const getMapData = async (name: string) => {
-    const response = await fetch(`/src/assets/geo/甘肃省/${name}.json`);
-    return await response.json();
-}
-
 
 const initEchartStruct = () => {
     // 初始化 ECharts 实例
@@ -37,6 +31,7 @@ const initEchartStruct = () => {
         // showCityMap(selectedName);
     });
 }
+
 const initEchartOption = () => {
     // @ts-ignore
     echarts.registerMap(selectedName.value, mapData);
@@ -45,8 +40,11 @@ const initEchartOption = () => {
 const updateEchartOption = async () => {
 
     const data = await getMapData(selectedName.value)
+
+    myChart.value.clear()
     // 使用 mapData 加载地图
     echarts.registerMap(selectedName.value, data);
+
     updateOption({
         series: [
             {
@@ -55,15 +53,21 @@ const updateEchartOption = async () => {
             },
         ],
     })
+
+    myChart.value.setOption(option.value);
+    
 }
 
 
 
 onMounted(initEchartStruct)
 onMounted(initEchartOption)
-// onMounted(updateEchartOption)
 
-
+watch(() => selectedName.value, (a) => {
+    console.log(a);
+    
+    updateEchartOption()
+})
 
 onMounted(() => {
     mapService.start()
