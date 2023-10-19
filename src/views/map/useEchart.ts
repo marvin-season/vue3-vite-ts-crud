@@ -4,14 +4,15 @@ import { LevelInfoProps, initLevelInfo as levelInfo } from "./data";
 
 export const useEchart: (
   mapRef: Ref<HTMLDivElement | null>,
-  initLevelInfo?: LevelInfoProps
+  initLevelInfo?: LevelInfoProps,
+  onHandleUpdate?: () => void
 ) => {
   myChart: Ref<any>;
   initEchartStruct: (mapRef_?: Ref<HTMLDivElement | null>) => void;
   currentLevelInfo: Ref<LevelInfoProps>;
   initEchartOption: (mapData: any) => void;
   updateEchartOption: (mapData: any) => void;
-} = (mapRef, initLevelInfo = levelInfo) => {
+} = (mapRef, initLevelInfo = levelInfo, onHandleUpdate) => {
   const initOption = {
     series: [
       {
@@ -48,6 +49,8 @@ export const useEchart: (
   };
 
   const updateEchartOption = async (mapData: any) => {
+    onHandleUpdate && onHandleUpdate();
+
     myChart.value.clear();
     // 使用 mapData 加载地图
     echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], mapData);
