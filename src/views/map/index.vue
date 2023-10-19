@@ -29,14 +29,22 @@ const handleClickUp = async () => {
 
 
 onMounted(async () => {
-    const data = await getMapData(currentLevelInfo);
-    initEchartOption(data)
+    try {
+        const data = await getMapData(currentLevelInfo);
+        initEchartOption(data)
+    } catch (error) {
+
+    }
 })
 
 
 watch(() => currentLevelInfo.value, async () => {
-    const data = await getMapData(currentLevelInfo);
-    updateEchartOption(data)
+    try {
+        const data = await getMapData(currentLevelInfo);
+        updateEchartOption(data)
+    } catch (error) {
+
+    }
 })
 
 onMounted(() => {

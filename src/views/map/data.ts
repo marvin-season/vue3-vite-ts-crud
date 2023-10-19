@@ -10,13 +10,11 @@ const geoLevelUrlMap: Record<string, string> = {
 
 export interface LevelInfoProps {
   level: number;
-  name: string;
   nameStack: string[];
 }
 
 export const initLevelInfo: LevelInfoProps = {
   level: 0,
-  name: "甘肃省",
   nameStack: ["甘肃省"],
 };
 
@@ -27,17 +25,19 @@ export const getMapData: (
   if (action == "up") {
     currentLevelInfo.value.level -= 1;
     currentLevelInfo.value.nameStack.pop();
-    currentLevelInfo.value.name =
-      currentLevelInfo.value.nameStack[
-        currentLevelInfo.value.nameStack.length - 1
-      ];
   }
 
-  const { name, level } = currentLevelInfo.value;
-  const url = base.concat(geoLevelUrlMap[level]).concat("/").concat(name);
+  const { nameStack, level } = currentLevelInfo.value;
+  const url = base.concat(geoLevelUrlMap[level]).concat("/").concat(nameStack.slice(-1)[0]);
 
   console.log("url", url);
 
-  const response = await fetch(url.concat(".json"));
-  return await response.json();
+  try {
+    const response = await fetch(url.concat(".json"));
+    return await response.json();
+  } catch (error) {
+    currentLevelInfo.value.level -= 1;
+    currentLevelInfo.value.nameStack.pop();
+    return Promise.reject(null);
+  }
 };

@@ -16,7 +16,7 @@ export const useEchart: (
     series: [
       {
         type: "map",
-        map: levelInfo.name,
+        map: levelInfo.nameStack.slice(-1)[0],
       },
     ],
   };
@@ -37,27 +37,26 @@ export const useEchart: (
       currentLevelInfo.value = {
         level: currentLevelInfo.value.level + 1,
         nameStack: currentLevelInfo.value.nameStack.concat(params.name),
-        name: params.name,
       };
     });
   };
 
   const initEchartOption = (mapData: any) => {
     // @ts-ignore
-    echarts.registerMap(currentLevelInfo.value.name, mapData);
+    echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], mapData);
     myChart.value.setOption(initOption);
   };
 
   const updateEchartOption = async (mapData: any) => {
     myChart.value.clear();
     // 使用 mapData 加载地图
-    echarts.registerMap(currentLevelInfo.value.name, mapData);
+    echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], mapData);
 
     myChart.value.setOption({
       series: [
         {
           type: "map",
-          map: currentLevelInfo.value.name,
+          map: currentLevelInfo.value.nameStack.slice(-1)[0],
         },
       ],
     });
