@@ -9,7 +9,6 @@
 <script setup lang="ts">
 
 import { onMounted, ref, watch } from 'vue';
-import { mapService } from './machine';
 import { useEchart } from './useEchart';
 import { getMapData, initLevelInfo } from './data';
 
