@@ -1,7 +1,6 @@
 import { Ref, onMounted, ref } from "vue";
 import * as echarts from "echarts";
-import { LevelInfoProps, initLevelInfo as levelInfo } from "./util";
-
+import { LevelInfoProps, initLevelInfo as levelInfo } from "./data";
 
 export const useEchart: (
   mapRef: Ref<HTMLDivElement | null>,
@@ -13,7 +12,6 @@ export const useEchart: (
   initEchartOption: (mapData: any) => void;
   updateEchartOption: (mapData: any) => void;
 } = (mapRef, initLevelInfo = levelInfo) => {
-
   const initOption = {
     series: [
       {
@@ -33,16 +31,14 @@ export const useEchart: (
     myChart.value = echarts.init(mapRef_?.value ?? mapRef?.value);
     // 注册点击事件
     myChart.value.on("click", function (params: any) {
-        console.log('click params', params);
-        
+      console.log("click params", params);
+
       // 在这里处理点击事件
       currentLevelInfo.value = {
         level: currentLevelInfo.value.level + 1,
         preName: currentLevelInfo.value.name,
         name: params.name,
-        preUrl: currentLevelInfo.value.url,
-        url: currentLevelInfo.value.preUrl?.concat('/').concat(params.name)
-      }
+      };
     });
   };
 

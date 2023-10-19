@@ -8,11 +8,10 @@
 
 <script setup lang="ts">
 
-import mapData from '@/assets/geo/甘肃省/index.json' // 你的地图数据文件
 import { onMounted, ref, watch } from 'vue';
 import { mapService } from './machine';
 import { useEchart } from './useEchart';
-import { getMapData } from './util';
+import { getMapData, initLevelInfo } from './data';
 
 const mapRef = ref<HTMLDivElement | null>(null)
 
@@ -20,15 +19,23 @@ const {
     initEchartOption,
     updateEchartOption,
     currentLevelInfo,
-} = useEchart(mapRef)
+} = useEchart(mapRef, initLevelInfo)
 
 
-onMounted(() => {
-    initEchartOption(mapData)
+const handleClickUp = async () => {
+    const data = await getMapData(currentLevelInfo, 'up');
+    updateEchartOption(data)
+}
+
+
+onMounted(async () => {
+    const data = await getMapData(currentLevelInfo);
+    initEchartOption(data)
 })
 
-watch(() => currentLevelInfo.value, async (info) => {
-    const data = await getMapData(info);
+
+watch(() => currentLevelInfo.value, async () => {
+    const data = await getMapData(currentLevelInfo);
     updateEchartOption(data)
 })
 
@@ -57,8 +64,4 @@ onMounted(() => {
 
 })
 
-const handleClickUp = () => {
-
-}
-
-</script>
+</script>./data
