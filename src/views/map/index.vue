@@ -51,29 +51,4 @@ watch(() => currentLevelInfo.value, async () => {
     }
 })
 
-onMounted(() => {
-    mapService.start()
-
-    mapService.subscribe((state) => {
-        // 在状态变化时更新地图数据和视图
-        switch (state.value) {
-            case 'province':
-                console.log('loadProvinceMap');
-
-                break;
-            case 'city':
-                console.log('loadCityMap');
-
-                break;
-            // case 'district':
-            //   loadDistrictMap();
-            //   break;
-            // case 'county':
-            //   loadCountyMap();
-            //   break;
-        }
-    });
-
-})
-
 </script>./data

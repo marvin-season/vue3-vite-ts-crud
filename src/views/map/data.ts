@@ -1,3 +1,4 @@
+import { ElMessage } from "element-plus";
 import { Ref } from "vue";
 
 const base = "/src/assets/geo/";
@@ -38,6 +39,7 @@ export const getMapData: (
   } catch (error) {
     currentLevelInfo.value.level -= 1;
     currentLevelInfo.value.nameStack.pop();
+    ElMessage.error("加载地图数据失败");
     return Promise.reject(null);
   }
 };
