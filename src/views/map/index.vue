@@ -1,4 +1,7 @@
 <template>
+    <div class="flex">
+        <el-button @click="handleClickUp">up</el-button>
+    </div>
     <div ref="mapRef" style="width: 600px; height: 400px">
     </div>
 </template>
@@ -16,7 +19,7 @@ const mapRef = ref<HTMLDivElement | null>(null)
 const {
     initEchartOption,
     updateEchartOption,
-    selectedName,
+    currentLevelInfo,
 } = useEchart(mapRef)
 
 
@@ -24,9 +27,8 @@ onMounted(() => {
     initEchartOption(mapData)
 })
 
-watch(() => selectedName.value, async (a) => {
-    console.log(a);
-    const data = await getMapData(selectedName.value);
+watch(() => currentLevelInfo.value, async (info) => {
+    const data = await getMapData(info);
     updateEchartOption(data)
 })
 
@@ -54,5 +56,9 @@ onMounted(() => {
     });
 
 })
+
+const handleClickUp = () => {
+
+}
 
 </script>

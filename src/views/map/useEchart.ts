@@ -1,65 +1,79 @@
 import { Ref, onMounted, ref } from "vue";
 import * as echarts from "echarts";
+import { LevelInfoProps, initLevelInfo as levelInfo } from "./util";
 
-export const useEchart: (mapRef: Ref<HTMLDivElement | null>) => {
+
+export const useEchart: (
+  mapRef: Ref<HTMLDivElement | null>,
+  initLevelInfo?: LevelInfoProps
+) => {
   myChart: Ref<any>;
-  initEchartStruct: any;
-  selectedName: Ref<any>;
-  initEchartOption: any,
-  updateEchartOption: any,
-} = (mapRef) => {
-  const option = ref({
+  initEchartStruct: (mapRef_?: Ref<HTMLDivElement | null>) => void;
+  currentLevelInfo: Ref<LevelInfoProps>;
+  initEchartOption: (mapData: any) => void;
+  updateEchartOption: (mapData: any) => void;
+} = (mapRef, initLevelInfo = levelInfo) => {
+
+  const initOption = {
     series: [
       {
         type: "map",
-        map: "customMap",
+        map: levelInfo.name,
       },
     ],
-  });
-  const myChart = ref();
-  const selectedName = ref("customMap");
+  };
 
-  const initEchartStruct = () => {
+  const currentLevelInfo = ref<LevelInfoProps>(initLevelInfo);
+
+  const myChart = ref();
+
+  const initEchartStruct = (mapRef_?: Ref<HTMLDivElement | null>) => {
+    myChart.value?.clear();
     // 初始化 ECharts 实例
-    myChart.value = echarts.init(mapRef.value);
+    myChart.value = echarts.init(mapRef_?.value ?? mapRef?.value);
     // 注册点击事件
     myChart.value.on("click", function (params: any) {
+        console.log('click params', params);
+        
       // 在这里处理点击事件
-      selectedName.value = params.name;
-      // 调用函数以显示选定市区的详细地图
-      // showCityMap(selectedName);
+      currentLevelInfo.value = {
+        level: currentLevelInfo.value.level + 1,
+        preName: currentLevelInfo.value.name,
+        name: params.name,
+        preUrl: currentLevelInfo.value.url,
+        url: currentLevelInfo.value.preUrl?.concat('/').concat(params.name)
+      }
     });
   };
 
   const initEchartOption = (mapData: any) => {
     // @ts-ignore
-    echarts.registerMap(selectedName.value, mapData);
-    myChart.value.setOption(option.value);
+    echarts.registerMap(currentLevelInfo.value.name, mapData);
+    myChart.value.setOption(initOption);
   };
 
   const updateEchartOption = async (mapData: any) => {
     myChart.value.clear();
     // 使用 mapData 加载地图
-    echarts.registerMap(selectedName.value, mapData);
+    echarts.registerMap(currentLevelInfo.value.name, mapData);
 
     myChart.value.setOption({
       series: [
         {
           type: "map",
-          map: selectedName.value,
+          map: currentLevelInfo.value.name,
         },
       ],
     });
   };
 
-  onMounted(initEchartStruct)
+  onMounted(initEchartStruct);
 
   return {
     myChart,
-    option,
     initEchartStruct,
     initEchartOption,
     updateEchartOption,
-    selectedName,
+    currentLevelInfo,
   };
 };
