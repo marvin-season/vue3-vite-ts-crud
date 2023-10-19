@@ -1,72 +1,33 @@
 <template>
-    <div @click="handleClick">AAA</div>
     <div ref="mapRef" style="width: 600px; height: 400px">
-
     </div>
 </template>
 
 <script setup lang="ts">
-import * as echarts from 'echarts';
+
 import mapData from '@/assets/geo/甘肃省/index.json' // 你的地图数据文件
 import { onMounted, ref, watch } from 'vue';
 import { mapService } from './machine';
-import { useOption } from './useOption';
+import { useEchart } from './useEchart';
 import { getMapData } from './util';
 
 const mapRef = ref<HTMLDivElement | null>(null)
-const myChart = ref()
-const selectedName = ref('customMap')
 
-const { option, updateOption } = useOption()
-
-const initEchartStruct = () => {
-    // 初始化 ECharts 实例
-    myChart.value = echarts.init(mapRef.value);
-
-    // 注册点击事件
-    myChart.value.on('click', function (params: any) {
-        // 在这里处理点击事件
-        selectedName.value = params.name;
-        // 调用函数以显示选定市区的详细地图
-        // showCityMap(selectedName);
-    });
-}
-
-const initEchartOption = () => {
-    // @ts-ignore
-    echarts.registerMap(selectedName.value, mapData);
-    myChart.value.setOption(option.value);
-}
-const updateEchartOption = async () => {
-
-    const data = await getMapData(selectedName.value)
-
-    myChart.value.clear()
-    // 使用 mapData 加载地图
-    echarts.registerMap(selectedName.value, data);
-
-    updateOption({
-        series: [
-            {
-                type: "map",
-                map: selectedName.value,
-            },
-        ],
-    })
-
-    myChart.value.setOption(option.value);
-    
-}
+const {
+    initEchartOption,
+    updateEchartOption,
+    selectedName,
+} = useEchart(mapRef)
 
 
+onMounted(() => {
+    initEchartOption(mapData)
+})
 
-onMounted(initEchartStruct)
-onMounted(initEchartOption)
-
-watch(() => selectedName.value, (a) => {
+watch(() => selectedName.value, async (a) => {
     console.log(a);
-    
-    updateEchartOption()
+    const data = await getMapData(selectedName.value);
+    updateEchartOption(data)
 })
 
 onMounted(() => {
@@ -94,7 +55,4 @@ onMounted(() => {
 
 })
 
-const handleClick = () => {
-    mapService.send('SWITCH_TO_CITY')
-}
 </script>
