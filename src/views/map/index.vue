@@ -10,7 +10,7 @@
 
 import { onMounted, ref, watch } from 'vue';
 import { useEchart } from './useEchart';
-import { getMapData, initLevelInfo } from './data';
+import {  initLevelInfo } from './data';
 import gsap from 'gsap';
 
 const mapRef = ref<HTMLDivElement | null>(null)
@@ -25,38 +25,21 @@ const onHandleUpdate = () => {
 }
 
 const {
-    initEchartOption,
-    updateEchartOption,
+    initEchartMap,
+    updateEchartMap,
     currentLevelInfo,
 } = useEchart(mapRef, initLevelInfo, onHandleUpdate)
 
 
 const handleClickUp = async () => {
-    try {
-        const data = await getMapData(currentLevelInfo, 'up');
-        updateEchartOption(data)
-    } catch (error) {
-
-    }
+    updateEchartMap && updateEchartMap()
 }
 
-onMounted(async () => {
-    try {
-        const data = await getMapData(currentLevelInfo);
-        initEchartOption(data)
-    } catch (error) {
-
-    }
-})
+onMounted(initEchartMap)
 
 
 watch(() => currentLevelInfo.value, async () => {
-    try {
-        const data = await getMapData(currentLevelInfo);
-        updateEchartOption(data)
-    } catch (error) {
-
-    }
+    updateEchartMap && updateEchartMap()
 })
 
 </script>./data

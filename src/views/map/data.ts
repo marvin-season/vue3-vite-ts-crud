@@ -14,6 +14,13 @@ export interface LevelInfoProps {
   nameStack: string[];
 }
 
+export interface UpdateEchartOptionProps {
+  mapData?: any;
+  action: MapAction;
+}
+
+export type MapAction = "up" | "down";
+
 export const initLevelInfo: LevelInfoProps = {
   level: 0,
   nameStack: ["甘肃省"],
@@ -21,7 +28,7 @@ export const initLevelInfo: LevelInfoProps = {
 
 export const getMapData: (
   currentLevelInfo: Ref<LevelInfoProps>,
-  action?: "up" | "down"
+  action?: MapAction
 ) => any = async (currentLevelInfo, action = "down") => {
   if (action == "up") {
     currentLevelInfo.value.level -= 1;
@@ -29,7 +36,10 @@ export const getMapData: (
   }
 
   const { nameStack, level } = currentLevelInfo.value;
-  const url = base.concat(geoLevelUrlMap[level]).concat("/").concat(nameStack.slice(-1)[0]);
+  const url = base
+    .concat(geoLevelUrlMap[level])
+    .concat("/")
+    .concat(nameStack.slice(-1)[0]);
 
   console.log("url", url);
 

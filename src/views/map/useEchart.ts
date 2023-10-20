@@ -1,6 +1,12 @@
 import { Ref, onMounted, ref } from "vue";
 import * as echarts from "echarts";
-import { LevelInfoProps, initLevelInfo as levelInfo } from "./data";
+import {
+  LevelInfoProps,
+  MapAction,
+  UpdateEchartOptionProps,
+  getMapData,
+  initLevelInfo as levelInfo,
+} from "./data";
 
 export const useEchart: (
   mapRef: Ref<HTMLDivElement | null>,
@@ -10,8 +16,8 @@ export const useEchart: (
   myChart: Ref<any>;
   initEchartStruct: (mapRef_?: Ref<HTMLDivElement | null>) => void;
   currentLevelInfo: Ref<LevelInfoProps>;
-  initEchartOption: (mapData: any) => void;
-  updateEchartOption: (mapData: any) => void;
+  initEchartMap: (mapData?: any) => void;
+  updateEchartMap: (params?: UpdateEchartOptionProps) => void;
 } = (mapRef, initLevelInfo = levelInfo, onHandleUpdate) => {
   const initOption = {
     series: [
@@ -42,20 +48,17 @@ export const useEchart: (
     });
   };
 
-  const initEchartOption = (mapData: any) => {
-    // @ts-ignore
-    echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], mapData);
-    myChart.value.setOption(initOption);
+  const initEchartMap = async (mapData?: any) => {
+    await registerMap(mapData);
+    updateOption(initOption);
   };
 
-  const updateEchartOption = async (mapData: any) => {
+  const updateEchartMap: (params?: UpdateEchartOptionProps) => void = async (
+    params
+  ) => {
     onHandleUpdate && onHandleUpdate();
-
-    myChart.value.clear();
-    // 使用 mapData 加载地图
-    echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], mapData);
-
-    myChart.value.setOption({
+    await registerMap(params?.mapData, params?.action);
+    updateOption({
       series: [
         {
           type: "map",
@@ -65,13 +68,30 @@ export const useEchart: (
     });
   };
 
+  const registerMap: (
+    mapData?: any,
+    action?: MapAction
+  ) => Promise<void> = async (mapData = null, action = "down") => {
+    if (myChart.value) {
+      myChart.value.clear();
+    }
+    try {
+      const data = mapData ?? (await getMapData(currentLevelInfo, action));
+      echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], data);
+    } catch (error) {}
+  };
+
+  const updateOption = (option: any) => {
+    myChart.value.setOption(option);
+  };
+
   onMounted(initEchartStruct);
 
   return {
     myChart,
     initEchartStruct,
-    initEchartOption,
-    updateEchartOption,
+    initEchartMap,
+    updateEchartMap,
     currentLevelInfo,
   };
 };
