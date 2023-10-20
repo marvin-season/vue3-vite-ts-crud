@@ -26,7 +26,7 @@ const handleInit = () => {
     updateEchartMap({
         levelInfo: {
             level: getLevel('省'),
-            nameStack: ['甘肃省']
+            nameStack: ['中华人民共和国', '甘肃省']
         }
     })
 }
