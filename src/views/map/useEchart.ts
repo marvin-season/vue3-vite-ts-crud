@@ -81,7 +81,7 @@ export const useEchart: (
         myChart.value.dispatchAction({
           type: "geoRoam",
           zoom: 2, // 放大级别
-          center: [],
+          center: [0, 0],
         });
       }
     } catch (error) {
