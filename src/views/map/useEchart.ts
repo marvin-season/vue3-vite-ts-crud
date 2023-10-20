@@ -13,21 +13,10 @@ export const useEchart: (
   initLevelInfo?: LevelInfoProps,
   onHandleUpdate?: () => void
 ) => {
-  myChart: Ref<any>;
-  initEchartStruct: (mapRef_?: Ref<HTMLDivElement | null>) => void;
   currentLevelInfo: Ref<LevelInfoProps>;
   initEchartMap: (mapData?: any) => void;
   updateEchartMap: (params?: UpdateEchartOptionProps) => void;
 } = (mapRef, initLevelInfo = levelInfo, onHandleUpdate) => {
-  const initOption = {
-    series: [
-      {
-        type: "map",
-        map: levelInfo.nameStack.slice(-1)[0],
-      },
-    ],
-  };
-
   const currentLevelInfo = ref<LevelInfoProps>(initLevelInfo);
 
   const myChart = ref();
@@ -50,7 +39,6 @@ export const useEchart: (
 
   const initEchartMap = async (mapData?: any) => {
     await registerMap(mapData);
-    updateOption(initOption);
   };
 
   const updateEchartMap: (params?: UpdateEchartOptionProps) => void = async (
@@ -58,27 +46,31 @@ export const useEchart: (
   ) => {
     onHandleUpdate && onHandleUpdate();
     await registerMap(params?.mapData, params?.action);
-    updateOption({
-      series: [
-        {
-          type: "map",
-          map: currentLevelInfo.value.nameStack.slice(-1)[0],
-        },
-      ],
-    });
   };
 
   const registerMap: (
     mapData?: any,
     action?: MapAction
   ) => Promise<void> = async (mapData = null, action = "down") => {
-    if (myChart.value) {
-      myChart.value.clear();
-    }
+    let data = mapData;
     try {
-      const data = mapData ?? (await getMapData(currentLevelInfo, action));
+      data = await getMapData(currentLevelInfo, action);
+      if (myChart.value) {
+        myChart.value.clear();
+      }
       echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], data);
-    } catch (error) {}
+
+      updateOption({
+        series: [
+          {
+            type: "map",
+            map: currentLevelInfo.value.nameStack.slice(-1)[0],
+          },
+        ],
+      });
+    } catch (error) {
+      return Promise.reject(false);
+    }
   };
 
   const updateOption = (option: any) => {
@@ -88,8 +80,6 @@ export const useEchart: (
   onMounted(initEchartStruct);
 
   return {
-    myChart,
-    initEchartStruct,
     initEchartMap,
     updateEchartMap,
     currentLevelInfo,

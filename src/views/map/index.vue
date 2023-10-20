@@ -32,7 +32,9 @@ const {
 
 
 const handleClickUp = async () => {
-    updateEchartMap && updateEchartMap()
+    updateEchartMap && updateEchartMap({
+        action: 'up',
+    })
 }
 
 onMounted(initEchartMap)
@@ -42,4 +44,4 @@ watch(() => currentLevelInfo.value, async () => {
     updateEchartMap && updateEchartMap()
 })
 
-</script>./data
+</script>
