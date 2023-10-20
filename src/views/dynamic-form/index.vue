@@ -1,9 +1,13 @@
 <template>
-    <tree :root="root"></tree>
+    <div style="width: 300px; margin: auto;">
+        <el-input class="" placeholder="生成层级" v-model="info.max"></el-input>
+        <el-input placeholder="每层生成的节点个数" v-model="info.count"></el-input>
+        <tree :root="root"></tree>
+    </div>
 </template>
 <script setup lang="ts">
 import tree from './tree.vue'
-import { ref, } from 'vue';
+import { ref, watch } from 'vue';
 
 
 export interface FormPops {
@@ -17,7 +21,18 @@ export interface FormPops {
     parent: FormPops | null
 }
 
-const genRoot = (preObj: FormPops, level: number, max: 3) => {
+const info = ref({
+    count: 2,
+    max: 2
+})
+
+watch(info.value, () => {
+    console.log(info.value);
+    root_.children = []
+    root.value = genRoot(root_, 2, info.value.max)
+})
+
+const genRoot = (preObj: FormPops, level: number, max: number = 3) => {
     if (level > max) {
         return preObj
     }
@@ -38,20 +53,19 @@ const genRoot = (preObj: FormPops, level: number, max: 3) => {
     }
 
     return preObj
-
 }
 
-const root_ = genRoot({
+const root_: FormPops = {
     level: 1,
     type: 'select',
     value: [],
     options: [1, 2, 3],
     nextCommonOptionSet: [4, 5, 6, 7, 8, 9],
     children: [],
-    count: 2,
+    count: info.value.count,
     parent: null
-}, 2, 3)
+}
 
-const root = ref<FormPops>(root_)
+const root = ref<FormPops>(genRoot(root_, 2, info.value.max))
 
 </script>
