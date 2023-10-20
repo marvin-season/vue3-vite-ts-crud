@@ -1,4 +1,4 @@
-import { Ref, onMounted, ref } from "vue";
+import { Ref, computed, onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import {
   LevelInfoProps,
@@ -18,6 +18,11 @@ export const useEchart: (
   updateEchartMap: (params?: UpdateEchartOptionProps) => void;
 } = (mapRef, initLevelInfo = levelInfo, onHandleUpdate) => {
   const currentLevelInfo = ref<LevelInfoProps>(initLevelInfo);
+  
+  const mapName = computed(() => {
+    return currentLevelInfo.value.nameStack.slice(-1)[0]
+  })
+  
 
   const myChart = ref();
 
@@ -58,23 +63,30 @@ export const useEchart: (
       if (myChart.value) {
         myChart.value.clear();
       }
-      echarts.registerMap(currentLevelInfo.value.nameStack.slice(-1)[0], data);
+      echarts.registerMap(mapName.value, data);
 
-      updateOption({
+      myChart.value.setOption({
+        geo: {
+          map: mapName.value, // 使用详细信息的地图
+        },
         series: [
           {
             type: "map",
-            map: currentLevelInfo.value.nameStack.slice(-1)[0],
+            map: mapName.value,
           },
         ],
       });
+
+      if (action == "down") {
+        myChart.value.dispatchAction({
+          type: "geoRoam",
+          zoom: 2, // 放大级别
+          center: [],
+        });
+      }
     } catch (error) {
       return Promise.reject(false);
     }
-  };
-
-  const updateOption = (option: any) => {
-    myChart.value.setOption(option);
   };
 
   onMounted(initEchartStruct);
