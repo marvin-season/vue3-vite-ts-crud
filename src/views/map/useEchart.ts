@@ -11,18 +11,15 @@ import {
 export const useEchart: (
   mapRef: Ref<HTMLDivElement | null>,
   initLevelInfo?: LevelInfoProps,
-  onHandleUpdate?: () => void
 ) => {
   currentLevelInfo: Ref<LevelInfoProps>;
-  initEchartMap: (mapData?: any) => void;
   updateEchartMap: (params?: UpdateEchartOptionProps) => void;
-} = (mapRef, initLevelInfo = levelInfo, onHandleUpdate) => {
+} = (mapRef, initLevelInfo = levelInfo) => {
   const currentLevelInfo = ref<LevelInfoProps>(initLevelInfo);
-  
+
   const mapName = computed(() => {
-    return currentLevelInfo.value.nameStack.slice(-1)[0]
-  })
-  
+    return currentLevelInfo.value.nameStack.slice(-1)[0];
+  });
 
   const myChart = ref();
 
@@ -42,57 +39,63 @@ export const useEchart: (
     });
   };
 
-  const initEchartMap = async (mapData?: any) => {
-    await registerMap(mapData);
+  const initEchartMap = async () => {
+    await registerMap();
   };
 
   const updateEchartMap: (params?: UpdateEchartOptionProps) => void = async (
     params
   ) => {
-    onHandleUpdate && onHandleUpdate();
-    await registerMap(params?.mapData, params?.action);
+
+    if(params?.levelInfo){
+      currentLevelInfo.value = params.levelInfo;
+    }
+
+    await registerMap(params?.action);
   };
 
   const registerMap: (
-    mapData?: any,
     action?: MapAction
-  ) => Promise<void> = async (mapData = null, action = "down") => {
-    let data = mapData;
+  ) => Promise<void> = async (action = "down") => {
+    let data = null;
     try {
-      data = await getMapData(currentLevelInfo, action);
-      if (myChart.value) {
-        myChart.value.clear();
-      }
-      echarts.registerMap(mapName.value, data);
-
-      myChart.value.setOption({
-        geo: {
-          map: mapName.value, // 使用详细信息的地图
-        },
-        series: [
-          {
-            type: "map",
-            map: mapName.value,
-          },
-        ],
-      });
-
-      if (action == "down") {
-        myChart.value.dispatchAction({
-          type: "geoRoam",
-          zoom: 2, // 放大级别
-          center: [0, 0],
-        });
+      if (!data) {
+        data = await getMapData(currentLevelInfo, action);
       }
     } catch (error) {
       return Promise.reject(false);
     }
+
+    if (myChart.value) {
+      myChart.value.clear();
+    }
+    echarts.registerMap(mapName.value, data);
+
+    myChart.value.setOption({
+      geo: {
+        map: mapName.value, // 使用详细信息的地图
+      },
+      series: [
+        {
+          type: "map",
+          map: mapName.value,
+        },
+      ],
+    });
+
+    if (action == "down") {
+      myChart.value.dispatchAction({
+        type: "geoRoam",
+        zoom: 2, // 放大级别
+        center: [0, 0],
+      });
+    }
   };
 
   onMounted(initEchartStruct);
+  onMounted(initEchartMap);
 
   return {
-    initEchartMap,
     updateEchartMap,
     currentLevelInfo,
   };

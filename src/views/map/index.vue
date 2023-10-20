@@ -1,5 +1,6 @@
 <template>
     <div class="flex">
+        <el-button @click="handleInit">初始化</el-button>
         <el-button @click="handleClickUp">up</el-button>
     </div>
     <div ref="mapRef" class="myRefCon" style="height: 600px">
@@ -8,28 +9,34 @@
 
 <script setup lang="ts">
 
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useEchart } from './useEchart';
-import { initLevelInfo } from './data';
-// import gsap from 'gsap';
+import { initLevelInfo, getLevel } from './data';
+// import gsap from 'gsap';‘
 
 const mapRef = ref<HTMLDivElement | null>(null)
 
 const {
-    initEchartMap,
     updateEchartMap,
     currentLevelInfo,
 } = useEchart(mapRef, initLevelInfo)
 
 
+const handleInit = () => {
+    updateEchartMap({
+        levelInfo: {
+            level: getLevel('省'),
+            nameStack: ['甘肃省']
+        }
+    })
+}
+
 const handleClickUp = async () => {
     updateEchartMap && updateEchartMap({
         action: 'up',
     })
+
 }
-
-onMounted(initEchartMap)
-
 
 watch(() => currentLevelInfo.value, async () => {
     updateEchartMap && updateEchartMap()

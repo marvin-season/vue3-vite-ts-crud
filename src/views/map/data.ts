@@ -3,11 +3,11 @@ import { Ref } from "vue";
 
 const base = "/src/assets/geo/";
 
-const geoLevelUrlMap: Record<string, string> = {
-  0: "省",
-  1: "市",
-  2: "县",
-};
+const MapLevelsNameOrder = ["国", "省", "市", "县"];
+
+export const getLevel = (levelName: string) => {
+  return MapLevelsNameOrder.indexOf(levelName);
+}
 
 export interface LevelInfoProps {
   level: number;
@@ -15,15 +15,15 @@ export interface LevelInfoProps {
 }
 
 export interface UpdateEchartOptionProps {
-  mapData?: any;
-  action: MapAction;
+  action?: MapAction;
+  levelInfo?: LevelInfoProps
 }
 
 export type MapAction = "up" | "down";
 
 export const initLevelInfo: LevelInfoProps = {
-  level: 0,
-  nameStack: ["甘肃省"],
+  level: getLevel("国"),
+  nameStack: ["中华人民共和国"],
 };
 
 export const getMapData: (
@@ -38,7 +38,7 @@ export const getMapData: (
 
   const { nameStack, level } = currentLevelInfo.value;
   const url = base
-    .concat(geoLevelUrlMap[level])
+    .concat(MapLevelsNameOrder[level])
     .concat("/")
     .concat(nameStack.slice(-1)[0])
     .concat(".json");
