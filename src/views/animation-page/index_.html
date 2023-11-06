@@ -1,0 +1,48 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div>
+      <button class="btn">click</button>
+      <label>4599</label>
+    </div>
+    <script>
+      function animation(duriation, from, to, onFinish) {
+        const speed = (to - from) / duriation;
+        let value = from;
+        const start = Date.now();
+        // 注册状态
+
+        const _run = () => {
+          const now = Date.now();
+          const time = now - start;
+          // 更改状态
+          if (time >= duriation) {
+            value = to;
+            onFinish(value);
+            return;
+          }
+
+          value = from + speed * time;
+          console.log(value);
+          onFinish(value);
+          requestAnimationFrame(_run);
+        };
+
+        _run();
+      }
+
+      const label = document.querySelector("label");
+      const btn = document.querySelector(".btn");
+
+      btn.onclick = function () {
+        animation(1000, 4599, 99, (val) => {
+          label.textContent = val;
+        });
+      };
+    </script>
+  </body>
+</html>
